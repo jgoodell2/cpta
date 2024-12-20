@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Analysis Interview</title>
+  <script src="https://unpkg.com/compromise"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .question, .follow-up {
+      margin-bottom: 15px;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    textarea, input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Task Analysis Expert Interview</h1>
+  <div id="interviewSection">
+    <div id="stepContainer"></div>
+    <button id="nextButton">Next</button>
+  </div>
+  <div id="output" class="output"></div>
+  <script src="app.js"></script>
+</body>
+</html>
