@@ -122,23 +122,35 @@ document.getElementById("nextButton").addEventListener("click", () => {
   const step = steps[currentStepIndex];
   const stepContainer = document.getElementById("stepContainer");
 
+  let response;
+
   if (step.type === "text") {
-    const input = document.getElementById("stepInput").value;
-    taskAnalysisData[step.field] = input;
+    response = document.getElementById("stepInput").value.trim();
+    if (!response) {
+      alert("Please provide a response before continuing.");
+      return;
+    }
+    taskAnalysisData[step.field] = response;
 
     if (step.detectTerms) {
-      detectTerms(input, step.termField);
+      detectTerms(response, step.termField);
     }
   } else if (step.type === "multi") {
+    response = [];
     step.prompts.forEach((_, index) => {
-      const input = document.getElementById(`stepInput${index}`).value;
-      if (!taskAnalysisData[step.field]) taskAnalysisData[step.field] = [];
-      taskAnalysisData[step.field].push(input);
-
-      if (step.detectTerms) {
-        detectTerms(input, step.termField);
+      const input = document.getElementById(`stepInput${index}`).value.trim();
+      if (input) {
+        response.push(input);
+        if (step.detectTerms) {
+          detectTerms(input, step.termField);
+        }
       }
     });
+    if (response.length === 0) {
+      alert("Please provide at least one response before continuing.");
+      return;
+    }
+    taskAnalysisData[step.field] = response;
   }
 
   // Move to the next step
@@ -150,10 +162,15 @@ document.getElementById("nextButton").addEventListener("click", () => {
   }
 });
 
+// Detect terms in the response
 function detectTerms(response, termField) {
+  if (typeof response !== "string" || response.trim() === "") {
+    console.error("Invalid input for term detection:", response);
+    return;
+  }
+
   const doc = nlp(response);
 
-  // Ensure termField exists and is an array
   if (!taskAnalysisData[termField]) {
     taskAnalysisData[termField] = [];
   }
@@ -161,15 +178,18 @@ function detectTerms(response, termField) {
   doc.nouns().forEach(noun => {
     const term = noun.text;
 
-    // Add term to the termField array
+    // Ignore terms that are too long or have unusual characters
+    if (term.length > 30 || /[^a-zA-Z0-9\s]/.test(term)) {
+      console.warn("Skipping unusual term:", term);
+      return;
+    }
+
     taskAnalysisData[termField].push({ term, definition: "" });
 
-    // Display prompt for defining the term
     const output = document.getElementById("output");
     output.innerHTML += `<p>Detected term: <strong>${term}</strong>. Please define it:</p>`;
   });
 }
-
 
 // Display final results
 function displayResults() {
