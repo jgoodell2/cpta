@@ -150,16 +150,26 @@ document.getElementById("nextButton").addEventListener("click", () => {
   }
 });
 
-// Detect terms in the response
 function detectTerms(response, termField) {
   const doc = nlp(response);
+
+  // Ensure termField exists and is an array
+  if (!taskAnalysisData[termField]) {
+    taskAnalysisData[termField] = [];
+  }
+
   doc.nouns().forEach(noun => {
     const term = noun.text;
+
+    // Add term to the termField array
     taskAnalysisData[termField].push({ term, definition: "" });
+
+    // Display prompt for defining the term
     const output = document.getElementById("output");
     output.innerHTML += `<p>Detected term: <strong>${term}</strong>. Please define it:</p>`;
   });
 }
+
 
 // Display final results
 function displayResults() {
